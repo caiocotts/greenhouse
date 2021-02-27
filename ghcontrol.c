@@ -1,4 +1,6 @@
-
+/**  @brief Code for ghcontrol functions
+ *   @file ghcontrol.c
+ */
 #include "ghcontrol.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -6,39 +8,59 @@
 #include <string.h>
 #include <time.h>
 
-void GhDelay(int milliseconds) {
+/**  @brief Delay program for a specific amount of time.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @param milliseconds Holds a value of time in milliseconds.
+ *   @return void
+*/
+void GhDelay(int milliseconds)
+{
   long wait;
   clock_t now, start;
 
   wait = milliseconds * (CLOCKS_PER_SEC / 1000);
   start = clock();
   now = start;
-  while ((now - start) < wait) {
+  while ((now - start) < wait)
+  {
     now = clock();
   }
 }
 
-uint64_t GhGetSerial(void) {
+/**  @brief Get serial number of host computer.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @return Serial number as a long unsigned integer.
+*/
+uint64_t GhGetSerial(void)
+{
 
   static uint64_t serial = 0;
   FILE *fp;
   char buf[SYSINFOBUFSZ];
   char searchstring[] = SEARCHSTR;
   fp = fopen("/proc/cpuinfo", "r");
-  if (fp != NULL) {
-    while (fgets(buf, sizeof(buf), fp) != NULL) {
-      if (!strncasecmp(searchstring, buf, strlen(searchstring))) {
+  if (fp != NULL)
+  {
+    while (fgets(buf, sizeof(buf), fp) != NULL)
+    {
+      if (!strncasecmp(searchstring, buf, strlen(searchstring)))
+      {
         sscanf(buf + strlen(searchstring), "%Lx", &serial);
       }
     }
     fclose(fp);
   }
-  if (serial == 0) {
+  if (serial == 0)
+  {
     system("uname -a");
     system("ls --fu /usr/lib/codeblocks | grep -Po '\\.\\K[^ ]+'>stamp.txt");
     fp = fopen("stamp.txt", "r");
-    if (fp != NULL) {
-      while (fgets(buf, sizeof(buf), fp) != NULL) {
+    if (fp != NULL)
+    {
+      while (fgets(buf, sizeof(buf), fp) != NULL)
+      {
         sscanf(buf, "%lu", &serial);
       }
       fclose(fp);
@@ -47,18 +69,44 @@ uint64_t GhGetSerial(void) {
   return serial;
 }
 
+/**  @brief Get a random number based on current rand seed.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @param range Holds a value representing the range of two values.
+ *   @return 
+*/
 int GhGetRandom(int range) { return rand() % range; }
 
-void GhDisplayHeader(const char *sname) {
+/**  @brief Print a header with a specified username.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @param  sname Pointer to a string containing a username.
+ *   @return void
+*/
+void GhDisplayHeader(const char *sname)
+{
   fprintf(stdout, "%s' Greenhouse Controller\n\n\n", sname);
 }
 
-void GhControllerInit(void) {
+/**  @brief Generate a random seed based on the current time and call GhDisplayHeader.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @return void 
+*/
+void GhControllerInit(void)
+{
   srand((unsigned)time(NULL));
   GhDisplayHeader("Caio Cotts");
 }
 
-void GhDisplayReadings(struct readings rdata) {
+/**  @brief Display current time and sensor readings.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @param rdata struct variable holding sensor readings.
+ *   @return void
+*/
+void GhDisplayReadings(struct readings rdata)
+{
 
   fprintf(stdout,
           "\nUnit:%Lx %s Readings\tT: %5.1lfC\tH: %5.1lf%%\tP: %6.1lfmb\n ",
@@ -66,7 +114,13 @@ void GhDisplayReadings(struct readings rdata) {
           rdata.temperature);
 }
 
-double GhGetHumidity(void) {
+/**  @brief Get current humidity measurements.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @return Humidity as a percentage. 
+*/
+double GhGetHumidity(void)
+{
 #if SIMHUMIDITY
   return GhGetRandom(USHUMID - LSHUMID) + LSHUMID;
 #else
@@ -74,7 +128,13 @@ double GhGetHumidity(void) {
 #endif
 }
 
-double GhGetPressure(void) {
+/**  @brief Get current pressure measurements.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @return Pressure in millibars.
+*/
+double GhGetPressure(void)
+{
 #if SIMPRESSURE
   return GhGetRandom(USPRESS - LSPRESS) + LSPRESS;
 #else
@@ -82,7 +142,13 @@ double GhGetPressure(void) {
 #endif
 }
 
-double GhGetTemperature(void) {
+/**  @brief Get current temperature measuremts.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @return  Temperature in celsius.
+*/
+double GhGetTemperature(void)
+{
 
 #if SIMTEMPERATURE
   return GhGetRandom(USTEMP - LSTEMP) + LSTEMP;
@@ -91,7 +157,13 @@ double GhGetTemperature(void) {
 #endif
 }
 
-struct readings GhGetReadings(void) {
+/**  @brief Assign sensor values to readings variables.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @return Current sensor values. 
+*/
+struct readings GhGetReadings(void)
+{
   struct readings now = {0};
 
   now.rtime = time(NULL);
@@ -101,30 +173,43 @@ struct readings GhGetReadings(void) {
   return now;
 }
 
-// void GhGetReadings(double readings[SENSORS]) {
-
-//   readings[TEMPERATURE] = GhGetTemperature();
-//   readings[HUMIDITY] = GhGetHumidity();
-//   readings[PRESSURE] = GhGetPressure();
-// }
-
-struct controls GhSetControls(struct setpoints target, struct readings rdata) {
+/**  @brief Set heater and humidifier states to on or off based on set values.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @param target Target envirinmental values which the controller must maintain.
+ *   @param rdata Current sensor values
+ *   @return 
+*/
+struct controls GhSetControls(struct setpoints target, struct readings rdata)
+{
   struct controls cset = {0};
 
-  if (rdata.temperature < STEMP) {
+  if (rdata.temperature < STEMP)
+  {
     cset.heater = ON;
-  } else {
+  }
+  else
+  {
     cset.heater = OFF;
   }
-  if (rdata.humidity < SHUMID) {
+  if (rdata.humidity < SHUMID)
+  {
     cset.humidifier = ON;
-  } else {
+  }
+  else
+  {
     cset.humidifier = OFF;
   }
   return cset;
 }
 
-struct setpoints GhSetTargets(void) {
+/**  @brief Set target values for temperature and humidity.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @return a variable of type setpoints holding the environmental constants.
+*/
+struct setpoints GhSetTargets(void)
+{
   struct setpoints cpoints = {0};
 
   cpoints.temperature = STEMP;
@@ -132,11 +217,24 @@ struct setpoints GhSetTargets(void) {
   return cpoints;
 }
 
-void GhDisplayTargets(void) {
+/**  @brief Print environmental targets for temperature and humidity.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @return void 
+*/
+void GhDisplayTargets(void)
+{
   fprintf(stdout, "Targets\tT: %5.1lfC\tH: %5.1lf%%\n", STEMP, SHUMID);
 }
 
-void GhDisplayControls(struct controls ctrl) {
+/**  @brief Print the current states of heater and humidifier.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @param ctrl Holds the current states for heater and humidifier
+ *   @return void
+*/
+void GhDisplayControls(struct controls ctrl)
+{
   fprintf(stdout, " Controls\tHeater: %i\tHumidifier: %i\n", ctrl.heater,
           ctrl.humidifier);
 }

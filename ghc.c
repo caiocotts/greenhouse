@@ -1,10 +1,13 @@
-
+/**  @brief Main program that call and use all the functions and constants in ghcontrol.c and .h
+ *   @file ghc.c
+ */
 #include "ghcontrol.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-int main() {
+int main()
+{
   time_t now;
   struct controls ctrl = {0};
   struct setpoints sets = {0};
@@ -12,7 +15,8 @@ int main() {
   sets = GhSetTargets();
   GhControllerInit();
 
-  while (1) {
+  while (1)
+  {
     now = time(NULL);
     creadings = GhGetReadings();
 
@@ -23,9 +27,6 @@ int main() {
 
     GhDelay(GHUPDATE);
   }
-
-  // fprintf(stdout, "Press ENTER to continue...");
-  // getchar();
 
   return EXIT_FAILURE;
 }

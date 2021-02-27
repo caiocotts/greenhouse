@@ -10,8 +10,3 @@ ghcontrol.o: ghcontrol.c ghcontrol.h
 clean:
 	touch *
 	rm -f *.o ghc stamp.txt
-
-
-
-
-

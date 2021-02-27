@@ -1,4 +1,6 @@
-
+/**  @brief Constants, structures, function prototypes for ghcontrol code
+ *   @file ghcontrol.h
+ */
 #ifndef GHCONTROL_H
 #define GHCONTROL_H
 #include <stdint.h>
@@ -26,21 +28,25 @@
 #define SIMHUMIDITY 1
 #define SIMPRESSURE 1
 
-struct readings {
+struct readings
+{
   time_t rtime;
   double temperature;
   double humidity;
   double pressure;
 };
-struct setpoints {
+struct setpoints
+{
   double temperature;
   double humidity;
 };
-struct controls {
+struct controls
+{
   int heater;
   int humidifier;
 };
 
+///@cond INTERNAL
 int GhGetRandom(int range);
 uint64_t GhGetSerial(void);
 void GhDisplayHeader(const char *sname);
@@ -55,6 +61,6 @@ double GhGetHumidity(void);
 double GhGetPressure(void);
 double GhGetTemperature(void);
 struct readings GhGetReadings(void);
-// void GhGetReadings(double readings[SENSORS]);
+///@endcond
 
 #endif
