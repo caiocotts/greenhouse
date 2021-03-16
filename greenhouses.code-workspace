@@ -7,5 +7,10 @@
 			"path": "../simplegreenhouse"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"ncurses.h": "c",
+			"stdio.h": "c"
+		}
+	}
 }

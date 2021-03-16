@@ -8,7 +8,7 @@
 
 #define USHUMID 100
 #define LSHUMID 0
-#define SEARCHSTR "serial\t\t"
+#define SEARCHSTR "serial\t\t: "
 #define SYSINFOBUFSZ 512
 #define GHUPDATE 2000
 #define SENSORS 3

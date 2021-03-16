@@ -111,7 +111,7 @@ void GhDisplayReadings(struct readings rdata)
   fprintf(stdout,
           "\nUnit:%Lx %s Readings\tT: %5.1lfC\tH: %5.1lf%%\tP: %6.1lfmb\n ",
           GhGetSerial(), ctime(&rdata.rtime), rdata.temperature, rdata.humidity,
-          rdata.temperature);
+          rdata.pressure);
 }
 
 /**  @brief Get current humidity measurements.
@@ -184,7 +184,7 @@ struct controls GhSetControls(struct setpoints target, struct readings rdata)
 {
   struct controls cset = {0};
 
-  if (rdata.temperature < STEMP)
+  if (rdata.temperature < target.temperature)
   {
     cset.heater = ON;
   }
@@ -192,7 +192,7 @@ struct controls GhSetControls(struct setpoints target, struct readings rdata)
   {
     cset.heater = OFF;
   }
-  if (rdata.humidity < SHUMID)
+  if (rdata.humidity < target.humidity)
   {
     cset.humidifier = ON;
   }
