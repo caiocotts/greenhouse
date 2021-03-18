@@ -27,6 +27,7 @@
 #define SIMTEMPERATURE 1
 #define SIMHUMIDITY 1
 #define SIMPRESSURE 1
+#define CTIMESTRSZ 25
 
 struct readings
 {
@@ -54,13 +55,16 @@ void GhDelay(int milliseconds);
 void GhControllerInit(void);
 void GhDisplayControls(struct controls ctrl);
 void GhDisplayReadings(struct readings rdata);
-void GhDisplayTargets(void);
+void GhDisplayTargets(struct setpoints spts);
 struct controls GhSetControls(struct setpoints target, struct readings rdata);
 struct setpoints GhSetTargets(void);
 double GhGetHumidity(void);
 double GhGetPressure(void);
 double GhGetTemperature(void);
 struct readings GhGetReadings(void);
+int GhLogData(char *fname, struct readings ghdata);
+int GhSaveSetpoints(char *fname, struct setpoints spts);
+struct setpoints GhRetrieveSetPoints(char *fname);
 ///@endcond
 
 #endif

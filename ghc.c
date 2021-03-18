@@ -14,14 +14,16 @@ int main()
   struct readings creadings = {0};
   sets = GhSetTargets();
   GhControllerInit();
+  int logged;
 
   while (1)
   {
     now = time(NULL);
     creadings = GhGetReadings();
+    logged = GhLogData("ghdata.txt", creadings);
 
     GhDisplayReadings(creadings);
-    GhDisplayTargets();
+    GhDisplayTargets(sets);
     ctrl = GhSetControls(sets, creadings);
     GhDisplayControls(ctrl);
 

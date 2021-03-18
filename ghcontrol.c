@@ -178,7 +178,7 @@ struct readings GhGetReadings(void)
  *   @author Caio Cotts
  *   @param target Target envirinmental values which the controller must maintain.
  *   @param rdata Current sensor values
- *   @return 
+ *   @return a variable of type controls holding heater and humidifier states.
 */
 struct controls GhSetControls(struct setpoints target, struct readings rdata)
 {
@@ -203,28 +203,33 @@ struct controls GhSetControls(struct setpoints target, struct readings rdata)
   return cset;
 }
 
-/**  @brief Set target values for temperature and humidity.
+/**  @brief Set target values for temperature and humidity if not already set.
  *   @version 25FEB2021
  *   @author Caio Cotts
  *   @return a variable of type setpoints holding the environmental constants.
 */
 struct setpoints GhSetTargets(void)
 {
-  struct setpoints cpoints = {0};
+  struct setpoints cpoints = GhRetrieveSetPoints("setpoints.dat");
+  if (cpoints.temperature == 0)
+  {
+    cpoints.temperature = STEMP;
+    cpoints.humidity = SHUMID;
+    GhSaveSetpoints("setpoints.dat", cpoints);
+  }
 
-  cpoints.temperature = STEMP;
-  cpoints.humidity = SHUMID;
   return cpoints;
 }
 
 /**  @brief Print environmental targets for temperature and humidity.
  *   @version 25FEB2021
  *   @author Caio Cotts
+ *   @param spts varialbe holding the environmental constants.
  *   @return void 
 */
-void GhDisplayTargets(void)
+void GhDisplayTargets(struct setpoints spts)
 {
-  fprintf(stdout, "Targets\tT: %5.1lfC\tH: %5.1lf%%\n", STEMP, SHUMID);
+  fprintf(stdout, "Targets\tT: %5.1lfC\tH: %5.1lf%%\n", spts.temperature, spts.humidity);
 }
 
 /**  @brief Print the current states of heater and humidifier.
@@ -237,4 +242,73 @@ void GhDisplayControls(struct controls ctrl)
 {
   fprintf(stdout, " Controls\tHeater: %i\tHumidifier: %i\n", ctrl.heater,
           ctrl.humidifier);
+}
+
+/**  @brief Write output data into a file pointed to by fname.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @param fname points to a file which will hold output data.
+ *   @param ghdata holds current time and sensor readings.
+ *   @return 1 or 0 depending on the value returned by fopen
+*/
+int GhLogData(char *fname, struct readings ghdata)
+{
+  FILE *fp;
+  char ltime[CTIMESTRSZ];
+  fp = fopen(fname, "a");
+  if (fp == NULL)
+  {
+    return 0;
+  }
+  strcpy(ltime, ctime(&ghdata.rtime));
+  ltime[3] = ',';
+  ltime[7] = ',';
+  ltime[10] = ',';
+  ltime[19] = ',';
+
+  fprintf(fp, "\n%.24s,%5.1lf,%5.1lf,%6.1lf",
+          ltime, ghdata.temperature, ghdata.humidity,
+          ghdata.pressure);
+  fclose(fp);
+  return 1;
+}
+
+/**  @brief Write data from spts into a file pointed to by fname.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @param fname points to a file which will hold environmental constants.
+ *   @param ghdata holds environmental constants.
+ *   @return 1 or 0 depending on the value returned by fopen
+*/
+int GhSaveSetpoints(char *fname, struct setpoints spts)
+{
+  FILE *fp;
+  fp = fopen(fname, "w");
+  if (fp == NULL)
+  {
+    return 0;
+  }
+  fwrite(&spts, sizeof(struct setpoints), 1, fp);
+  fclose(fp);
+  return 1;
+}
+
+/**  @brief Read data from a file pointed to by fname and copy it into spts.
+ *   @version 25FEB2021
+ *   @author Caio Cotts
+ *   @param fname points to a file which will hold environmental constants.
+ *   @return variable holding environmental constants
+*/
+struct setpoints GhRetrieveSetPoints(char *fname)
+{
+  struct setpoints spts = {0};
+  FILE *fp;
+  fp = fopen(fname, "r");
+  if (fp == NULL)
+  {
+    return spts;
+  }
+  fread(&spts, sizeof(struct setpoints), 1, fp);
+  fclose(fp);
+  return spts;
 }
