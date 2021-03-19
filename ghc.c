@@ -18,7 +18,6 @@ int main()
 
   while (1)
   {
-    now = time(NULL);
     creadings = GhGetReadings();
     logged = GhLogData("ghdata.txt", creadings);
 
