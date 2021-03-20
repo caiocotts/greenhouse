@@ -63,7 +63,7 @@ double GhGetPressure(void);
 double GhGetTemperature(void);
 struct readings GhGetReadings(void);
 int GhLogData(char *fname, struct readings ghdata);
-int GhSaveSetpoints(char *fname, struct setpoints spts);
+int GhSaveSetPoints(char *fname, struct setpoints spts);
 struct setpoints GhRetrieveSetPoints(char *fname);
 ///@endcond
 

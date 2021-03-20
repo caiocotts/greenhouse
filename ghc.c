@@ -8,7 +8,6 @@
 
 int main()
 {
-  time_t now;
   struct controls ctrl = {0};
   struct setpoints sets = {0};
   struct readings creadings = {0};

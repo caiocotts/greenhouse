@@ -215,7 +215,7 @@ struct setpoints GhSetTargets(void)
   {
     cpoints.temperature = STEMP;
     cpoints.humidity = SHUMID;
-    GhSaveSetpoints("setpoints.dat", cpoints);
+    GhSaveSetPoints("setpoints.dat", cpoints);
   }
 
   return cpoints;
@@ -280,7 +280,7 @@ int GhLogData(char *fname, struct readings ghdata)
  *   @param ghdata holds environmental constants.
  *   @return 1 or 0 depending on the value returned by fopen
 */
-int GhSaveSetpoints(char *fname, struct setpoints spts)
+int GhSaveSetPoints(char *fname, struct setpoints spts)
 {
   FILE *fp;
   fp = fopen(fname, "w");
