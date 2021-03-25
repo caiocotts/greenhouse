@@ -5,9 +5,8 @@
 #define GHCONTROL_H
 #include <stdint.h>
 #include <time.h>
+#include "pisensehat.h"
 
-#define USHUMID 100
-#define LSHUMID 0
 #define SEARCHSTR "serial\t\t: "
 #define SYSINFOBUFSZ 512
 #define GHUPDATE 2000
@@ -21,6 +20,8 @@
 #define USPRESS 1016
 #define LSPRESS 975
 #define STEMP 25.0
+#define USHUMID 100
+#define LSHUMID 0
 #define SHUMID 55.0
 #define ON 1
 #define OFF 0
@@ -28,6 +29,12 @@
 #define SIMHUMIDITY 1
 #define SIMPRESSURE 1
 #define CTIMESTRSZ 25
+#define NUMBARS 8
+#define NUMPTS 8.0
+#define TBAR 7
+#define HBAR 5
+#define PBAR 3
+#define SENSEHAT 1
 
 struct readings
 {
@@ -65,6 +72,7 @@ struct readings GhGetReadings(void);
 int GhLogData(char *fname, struct readings ghdata);
 int GhSaveSetPoints(char *fname, struct setpoints spts);
 struct setpoints GhRetrieveSetPoints(char *fname);
+void GhDisplayAll(struct readings rd, struct setpoints sd);
 ///@endcond
 
 #endif

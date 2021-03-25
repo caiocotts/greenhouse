@@ -20,6 +20,7 @@ int main()
     creadings = GhGetReadings();
     logged = GhLogData("ghdata.txt", creadings);
 
+    GhDisplayAll(creadings, sets);
     GhDisplayReadings(creadings);
     GhDisplayTargets(sets);
     ctrl = GhSetControls(sets, creadings);

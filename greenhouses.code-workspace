@@ -10,7 +10,8 @@
 	"settings": {
 		"files.associations": {
 			"ncurses.h": "c",
-			"stdio.h": "c"
+			"stdio.h": "c",
+			"stdlib.h": "c"
 		}
 	}
 }
