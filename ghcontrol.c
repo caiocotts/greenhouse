@@ -330,33 +330,24 @@ void GhDisplayAll(struct readings rd, struct setpoints sd)
   int rv, sv, avh, avl;
   fbpixel_s pxc = {0};
   ShClearMatrix();
-  rv = (8.0 * (((rd.temperature - LSTEMP) / (USTEMP - LSTEMP)) + 0.05)) - 1.0;
+  rv = (NUMPTS * (((rd.temperature - LSTEMP) / (USTEMP - LSTEMP)) + 0.05)) - 1.0;
   pxc.red = 0x00;
   pxc.green = 0xFF;
   pxc.blue = 0x00;
-  ShSetVerticalBar(7, pxc, rv);
+  ShSetVerticalBar(TBAR, pxc, rv);
 
-  rv = (8.0 * (((rd.humidity - LSHUMID) / (USHUMID - LSHUMID)) + 0.05)) - 1.0;
-  pxc.red = 0x00;
-  pxc.green = 0xFF;
-  pxc.blue = 0x00;
-  ShSetVerticalBar(5, pxc, rv);
+  rv = (NUMPTS * (((rd.humidity - LSHUMID) / (USHUMID - LSHUMID)) + 0.05)) - 1.0;
+  ShSetVerticalBar(HBAR, pxc, rv);
 
-  rv = (8.0 * (((rd.pressure - LSPRESS) / (USPRESS - LSPRESS)) + 0.05)) - 1.0;
-  pxc.red = 0x00;
-  pxc.green = 0xFF;
-  pxc.blue = 0x00;
-  ShSetVerticalBar(3, pxc, rv);
+  rv = (NUMPTS * (((rd.pressure - LSPRESS) / (USPRESS - LSPRESS)) + 0.05)) - 1.0;
+  ShSetVerticalBar(PBAR, pxc, rv);
 
-  sv = (8.0 * (((sd.temperature - LSTEMP) / (USTEMP - LSTEMP)) + 0.05)) - 1.0;
+  sv = (NUMPTS * (((sd.temperature - LSTEMP) / (USTEMP - LSTEMP)) + 0.05)) - 1.0;
   pxc.red = 0xF0;
   pxc.green = 0x0F;
   pxc.blue = 0xF0;
-  ShSetPixel(7, sv, pxc);
+  ShSetPixel(TBAR, sv, pxc);
 
-  sv = (8.0 * (((sd.humidity - LSHUMID) / (USHUMID - LSHUMID)) + 0.05)) - 1.0;
-  pxc.red = 0xF0;
-  pxc.green = 0x0F;
-  pxc.blue = 0xF0;
-  ShSetPixel(5, sv, pxc);
+  sv = (NUMPTS * (((sd.humidity - LSHUMID) / (USHUMID - LSHUMID)) + 0.05)) - 1.0;
+  ShSetPixel(HBAR, sv, pxc);
 }
