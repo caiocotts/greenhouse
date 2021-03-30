@@ -8,9 +8,9 @@
 
 int main()
 {
-  struct controls ctrl = {0};
-  struct setpoints sets = {0};
-  struct readings creadings = {0};
+  control_s ctrl = {0};
+  setpoint_s sets = {0};
+  reading_s creadings = {0};
   sets = GhSetTargets();
   GhControllerInit();
   int logged;

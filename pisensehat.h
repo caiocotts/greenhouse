@@ -6,21 +6,22 @@
 #define PISENSEHAT_H
 
 // Includes
-#include <stdlib.h>
-#include <stdint.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <string.h>
-#include <linux/fb.h>
-#include <sys/ioctl.h>
-#include <poll.h>
 #include <dirent.h>
+#include <fcntl.h>
+#include <linux/fb.h>
 #include <linux/input.h>
+#include <poll.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
+
 
 // If running without physical Sensehat set EMULATOR to 1
 // Also comment out any calls you have in your main to GhLogData
@@ -81,23 +82,20 @@
 #define RGB565_BLUE 0x001F
 
 // Structures
-typedef struct fbpixel
-{
-    uint8_t red;
-    uint8_t green;
-    uint8_t blue;
+typedef struct fbpixel {
+  uint8_t red;
+  uint8_t green;
+  uint8_t blue;
 } fbpixel_s;
 
-typedef struct lps25hData
-{
-    double temperature;
-    double pressure;
+typedef struct lps25hData {
+  double temperature;
+  double pressure;
 } lps25hData_s;
 
-typedef struct ht221sData
-{
-    double temperature;
-    double humidity;
+typedef struct ht221sData {
+  double temperature;
+  double humidity;
 } ht221sData_s;
 
 // Function Prototypes

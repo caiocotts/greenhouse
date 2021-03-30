@@ -10,7 +10,7 @@
 #include <time.h>
 
 /**  @brief Delay program for a specific amount of time.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @param milliseconds Holds a value of time in milliseconds.
  *   @return void
@@ -30,7 +30,7 @@ void GhDelay(int milliseconds)
 }
 
 /**  @brief Get serial number of host computer.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @return Serial number as a long unsigned integer.
  */
@@ -71,7 +71,7 @@ uint64_t GhGetSerial(void)
 }
 
 /**  @brief Get a random number based on current rand seed.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @param range Holds a value representing the range of two values.
  *   @return
@@ -79,7 +79,7 @@ uint64_t GhGetSerial(void)
 int GhGetRandom(int range) { return rand() % range; }
 
 /**  @brief Print a header with a specified username.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @param  sname Pointer to a string containing a username.
  *   @return void
@@ -91,7 +91,7 @@ void GhDisplayHeader(const char *sname)
 
 /**  @brief Generate a random seed based on the current time and call
  * GhDisplayHeader.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @return void
  */
@@ -105,12 +105,12 @@ void GhControllerInit(void)
 }
 
 /**  @brief Display current time and sensor readings.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
- *   @param rdata struct variable holding sensor readings.
+ *   @param rdata   variable holding sensor readings.
  *   @return void
  */
-void GhDisplayReadings(struct readings rdata)
+void GhDisplayReadings(reading_s rdata)
 {
   fprintf(stdout,
           "\nUnit:%Lx %s Readings\tT: %5.1lfC\tH: %5.1lf%%\tP: %6.1lfmb\n ",
@@ -119,7 +119,7 @@ void GhDisplayReadings(struct readings rdata)
 }
 
 /**  @brief Get current humidity measurements.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @return Humidity as a percentage.
  */
@@ -128,12 +128,14 @@ double GhGetHumidity(void)
 #if SIMHUMIDITY
   return GhGetRandom(USHUMID - LSHUMID) + LSHUMID;
 #else
-  return 55.0;
+  ht221sData_s ch = {0};
+  ch = ShGetHT221SData();
+  return ch.humidity;
 #endif
 }
 
 /**  @brief Get current pressure measurements.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @return Pressure in millibars.
  */
@@ -142,12 +144,13 @@ double GhGetPressure(void)
 #if SIMPRESSURE
   return GhGetRandom(USPRESS - LSPRESS) + LSPRESS;
 #else
-  return 1013.0;
+  lps25hData_s cp = {0};
+  cp = ShGetLPS25HData();
 #endif
 }
 
 /**  @brief Get current temperature measuremts.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @return  Temperature in celsius.
  */
@@ -157,18 +160,20 @@ double GhGetTemperature(void)
 #if SIMTEMPERATURE
   return GhGetRandom(USTEMP - LSTEMP) + LSTEMP;
 #else
-  return 20.0;
+  ht221sData_s ct = {0};
+  ct = ShGetHT221SData();
+  return ct.temperature;
 #endif
 }
 
 /**  @brief Assign sensor values to readings variables.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @return Current sensor values.
  */
-struct readings GhGetReadings(void)
+reading_s GhGetReadings(void)
 {
-  struct readings now = {0};
+  reading_s now = {0};
 
   now.rtime = time(NULL);
   now.temperature = GhGetTemperature();
@@ -178,16 +183,16 @@ struct readings GhGetReadings(void)
 }
 
 /**  @brief Set heater and humidifier states to on or off based on set values.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @param target Target envirinmental values which the controller must
  * maintain.
  *   @param rdata Current sensor values
  *   @return a variable of type controls holding heater and humidifier states.
  */
-struct controls GhSetControls(struct setpoints target, struct readings rdata)
+control_s GhSetControls(setpoint_s target, reading_s rdata)
 {
-  struct controls cset = {0};
+  control_s cset = {0};
 
   if (rdata.temperature < target.temperature)
   {
@@ -209,13 +214,13 @@ struct controls GhSetControls(struct setpoints target, struct readings rdata)
 }
 
 /**  @brief Set target values for temperature and humidity if not already set.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @return a variable of type setpoints holding the environmental constants.
  */
-struct setpoints GhSetTargets(void)
+setpoint_s GhSetTargets(void)
 {
-  struct setpoints cpoints = GhRetrieveSetPoints("setpoints.dat");
+  setpoint_s cpoints = GhRetrieveSetPoints("setpoints.dat");
   if (cpoints.temperature == 0)
   {
     cpoints.temperature = STEMP;
@@ -227,37 +232,37 @@ struct setpoints GhSetTargets(void)
 }
 
 /**  @brief Print environmental targets for temperature and humidity.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @param spts varialbe holding the environmental constants.
  *   @return void
  */
-void GhDisplayTargets(struct setpoints spts)
+void GhDisplayTargets(setpoint_s spts)
 {
   fprintf(stdout, "Targets\tT: %5.1lfC\tH: %5.1lf%%\n", spts.temperature,
           spts.humidity);
 }
 
 /**  @brief Print the current states of heater and humidifier.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @param ctrl Holds the current states for heater and humidifier
  *   @return void
  */
-void GhDisplayControls(struct controls ctrl)
+void GhDisplayControls(control_s ctrl)
 {
   fprintf(stdout, " Controls\tHeater: %i\tHumidifier: %i\n", ctrl.heater,
           ctrl.humidifier);
 }
 
 /**  @brief Write output data into a file pointed to by fname.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @param fname points to a file which will hold output data.
  *   @param ghdata holds current time and sensor readings.
  *   @return 1 or 0 depending on the value returned by fopen
  */
-int GhLogData(char *fname, struct readings ghdata)
+int GhLogData(char *fname, reading_s ghdata)
 {
   FILE *fp;
   char ltime[CTIMESTRSZ];
@@ -279,13 +284,13 @@ int GhLogData(char *fname, struct readings ghdata)
 }
 
 /**  @brief Write data from spts into a file pointed to by fname.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @param fname points to a file which will hold environmental constants.
  *   @param ghdata holds environmental constants.
  *   @return 1 or 0 depending on the value returned by fopen
  */
-int GhSaveSetPoints(char *fname, struct setpoints spts)
+int GhSaveSetPoints(char *fname, setpoint_s spts)
 {
   FILE *fp;
   fp = fopen(fname, "w");
@@ -293,39 +298,39 @@ int GhSaveSetPoints(char *fname, struct setpoints spts)
   {
     return 0;
   }
-  fwrite(&spts, sizeof(struct setpoints), 1, fp);
+  fwrite(&spts, sizeof(setpoint_s), 1, fp);
   fclose(fp);
   return 1;
 }
 
 /**  @brief Read data from a file pointed to by fname and copy it into spts.
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @param fname points to a file which will hold environmental constants.
  *   @return variable holding environmental constants
  */
-struct setpoints GhRetrieveSetPoints(char *fname)
+setpoint_s GhRetrieveSetPoints(char *fname)
 {
-  struct setpoints spts = {0};
+  setpoint_s spts = {0};
   FILE *fp;
   fp = fopen(fname, "r");
   if (fp == NULL)
   {
     return spts;
   }
-  fread(&spts, sizeof(struct setpoints), 1, fp);
+  fread(&spts, sizeof(setpoint_s), 1, fp);
   fclose(fp);
   return spts;
 }
 
 /**  @brief Display scaled sensor readings and targets on LED matrix
- *   @version 25MAR2021
+ *   @version 30MAR2021
  *   @author Caio Cotts
  *   @param rd current sensor readings
  *   @param sd current environmental constants
  *   @return void
  */
-void GhDisplayAll(struct readings rd, struct setpoints sd)
+void GhDisplayAll(reading_s rd, setpoint_s sd)
 {
   int rv, sv, avh, avl;
   fbpixel_s pxc = {0};
