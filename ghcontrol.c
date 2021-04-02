@@ -146,6 +146,7 @@ double GhGetPressure(void)
 #else
   lps25hData_s cp = {0};
   cp = ShGetLPS25HData();
+  return cp.pressure;
 #endif
 }
 
