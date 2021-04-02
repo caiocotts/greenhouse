@@ -12,4 +12,4 @@ pisensehat.o: pisensehat.c pisensehat.h
 
 clean:
 	touch *
-	rm -f *.o ghc stamp.txt
+	rm -f *.o ghc 

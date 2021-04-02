@@ -1,0 +1,6 @@
+*.o
+ghc
+ghdata.txt
+setpoints.dat
+stamp.txt
+rtf/
