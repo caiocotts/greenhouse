@@ -22,7 +22,6 @@
 #include <time.h>
 #include <unistd.h>
 
-
 // If running without physical Sensehat set EMULATOR to 1
 // Also comment out any calls you have in your main to GhLogData
 // Remember to also use -lpython2.7 instead of -lwiringPi in the makefile
@@ -82,18 +81,21 @@
 #define RGB565_BLUE 0x001F
 
 // Structures
-typedef struct fbpixel {
+typedef struct fbpixel
+{
   uint8_t red;
   uint8_t green;
   uint8_t blue;
 } fbpixel_s;
 
-typedef struct lps25hData {
+typedef struct lps25hData
+{
   double temperature;
   double pressure;
 } lps25hData_s;
 
-typedef struct ht221sData {
+typedef struct ht221sData
+{
   double temperature;
   double humidity;
 } ht221sData_s;

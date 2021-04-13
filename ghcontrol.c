@@ -8,9 +8,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+const char alarmnames[NALARMS][ALARMNMSZ] = {
+    "No Alarms", "High Temperature", "Low Temperature", "High Humidity",
+    "Low Humidity", "High Pressure", "Low Pressure"};
 
 /**  @brief Delay program for a specific amount of time.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @param milliseconds Holds a value of time in milliseconds.
  *   @return void
@@ -30,7 +33,7 @@ void GhDelay(int milliseconds)
 }
 
 /**  @brief Get serial number of host computer.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @return Serial number as a long unsigned integer.
  */
@@ -71,7 +74,7 @@ uint64_t GhGetSerial(void)
 }
 
 /**  @brief Get a random number based on current rand seed.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @param range Holds a value representing the range of two values.
  *   @return
@@ -79,7 +82,7 @@ uint64_t GhGetSerial(void)
 int GhGetRandom(int range) { return rand() % range; }
 
 /**  @brief Print a header with a specified username.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @param  sname Pointer to a string containing a username.
  *   @return void
@@ -91,7 +94,7 @@ void GhDisplayHeader(const char *sname)
 
 /**  @brief Generate a random seed based on the current time and call
  * GhDisplayHeader.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @return void
  */
@@ -105,7 +108,7 @@ void GhControllerInit(void)
 }
 
 /**  @brief Display current time and sensor readings.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @param rdata   variable holding sensor readings.
  *   @return void
@@ -119,7 +122,7 @@ void GhDisplayReadings(reading_s rdata)
 }
 
 /**  @brief Get current humidity measurements.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @return Humidity as a percentage.
  */
@@ -135,7 +138,7 @@ double GhGetHumidity(void)
 }
 
 /**  @brief Get current pressure measurements.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @return Pressure in millibars.
  */
@@ -151,7 +154,7 @@ double GhGetPressure(void)
 }
 
 /**  @brief Get current temperature measuremts.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @return  Temperature in celsius.
  */
@@ -168,7 +171,7 @@ double GhGetTemperature(void)
 }
 
 /**  @brief Assign sensor values to readings variables.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @return Current sensor values.
  */
@@ -184,7 +187,7 @@ reading_s GhGetReadings(void)
 }
 
 /**  @brief Set heater and humidifier states to on or off based on set values.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @param target Target envirinmental values which the controller must
  * maintain.
@@ -215,7 +218,7 @@ control_s GhSetControls(setpoint_s target, reading_s rdata)
 }
 
 /**  @brief Set target values for temperature and humidity if not already set.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @return a variable of type setpoints holding the environmental constants.
  */
@@ -233,7 +236,7 @@ setpoint_s GhSetTargets(void)
 }
 
 /**  @brief Print environmental targets for temperature and humidity.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @param spts varialbe holding the environmental constants.
  *   @return void
@@ -245,7 +248,7 @@ void GhDisplayTargets(setpoint_s spts)
 }
 
 /**  @brief Print the current states of heater and humidifier.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @param ctrl Holds the current states for heater and humidifier
  *   @return void
@@ -257,7 +260,7 @@ void GhDisplayControls(control_s ctrl)
 }
 
 /**  @brief Write output data into a file pointed to by fname.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @param fname points to a file which will hold output data.
  *   @param ghdata holds current time and sensor readings.
@@ -285,7 +288,7 @@ int GhLogData(char *fname, reading_s ghdata)
 }
 
 /**  @brief Write data from spts into a file pointed to by fname.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @param fname points to a file which will hold environmental constants.
  *   @param ghdata holds environmental constants.
@@ -305,7 +308,7 @@ int GhSaveSetPoints(char *fname, setpoint_s spts)
 }
 
 /**  @brief Read data from a file pointed to by fname and copy it into spts.
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @param fname points to a file which will hold environmental constants.
  *   @return variable holding environmental constants
@@ -325,7 +328,7 @@ setpoint_s GhRetrieveSetPoints(char *fname)
 }
 
 /**  @brief Display scaled sensor readings and targets on LED matrix
- *   @version 30MAR2021
+ *   @version 9APR2021
  *   @author Caio Cotts
  *   @param rd current sensor readings
  *   @param sd current environmental constants
@@ -336,24 +339,122 @@ void GhDisplayAll(reading_s rd, setpoint_s sd)
   int rv, sv, avh, avl;
   fbpixel_s pxc = {0};
   ShClearMatrix();
-  rv = (NUMPTS * (((rd.temperature - LSTEMP) / (USTEMP - LSTEMP)) + 0.05)) - 1.0;
+  rv =
+      (NUMPTS * (((rd.temperature - LSTEMP) / (USTEMP - LSTEMP)) + 0.05)) - 1.0;
   pxc.red = 0x00;
   pxc.green = 0xFF;
   pxc.blue = 0x00;
   ShSetVerticalBar(TBAR, pxc, rv);
 
-  rv = (NUMPTS * (((rd.humidity - LSHUMID) / (USHUMID - LSHUMID)) + 0.05)) - 1.0;
+  rv =
+      (NUMPTS * (((rd.humidity - LSHUMID) / (USHUMID - LSHUMID)) + 0.05)) - 1.0;
   ShSetVerticalBar(HBAR, pxc, rv);
 
-  rv = (NUMPTS * (((rd.pressure - LSPRESS) / (USPRESS - LSPRESS)) + 0.05)) - 1.0;
+  rv =
+      (NUMPTS * (((rd.pressure - LSPRESS) / (USPRESS - LSPRESS)) + 0.05)) - 1.0;
   ShSetVerticalBar(PBAR, pxc, rv);
 
-  sv = (NUMPTS * (((sd.temperature - LSTEMP) / (USTEMP - LSTEMP)) + 0.05)) - 1.0;
+  sv =
+      (NUMPTS * (((sd.temperature - LSTEMP) / (USTEMP - LSTEMP)) + 0.05)) - 1.0;
   pxc.red = 0xF0;
   pxc.green = 0x0F;
   pxc.blue = 0xF0;
   ShSetPixel(TBAR, sv, pxc);
 
-  sv = (NUMPTS * (((sd.humidity - LSHUMID) / (USHUMID - LSHUMID)) + 0.05)) - 1.0;
+  sv =
+      (NUMPTS * (((sd.humidity - LSHUMID) / (USHUMID - LSHUMID)) + 0.05)) - 1.0;
   ShSetPixel(HBAR, sv, pxc);
+}
+
+/**  @brief Set maximum and lowest values that will trigger the alarm
+ *   @version 9APR2021
+ *   @author Caio Cotts
+ *   @return alarm limit values
+ */
+alarmlimit_s GhSetAlarmLimits(void)
+{
+  alarmlimit_s calarm;
+  calarm.hight = UPPERATEMP;
+  calarm.lowt = LOWERATEMP;
+  calarm.highh = UPPERAHUMID;
+  calarm.lowh = LOWERAHUMID;
+  calarm.highp = UPPERAPRESS;
+  calarm.lowp = LOWERAPRESS;
+  return calarm;
+}
+
+/**  @brief Set alarms on or of depending one current sensor readings
+ *   @version 9APR2021
+ *   @author Caio Cotts
+ *   @param calarm array holding alarm states
+ *   @param alarmpt alarm limits
+ *   @param radata current sensor readings and time
+ *   @return void
+ */
+void GhSetAlarms(alarm_s calarm[NALARMS], alarmlimit_s alarmpt,
+                 reading_s rdata)
+{
+  for (int i = 0; i < NALARMS; i++)
+  {
+    calarm[i].code = NOALARM;
+  }
+
+  if (rdata.temperature >= alarmpt.hight)
+  {
+    calarm[HTEMP].code = HTEMP;
+    calarm[HTEMP].atime = rdata.rtime;
+    calarm[HTEMP].value = rdata.temperature;
+  }
+
+  if (rdata.temperature <= alarmpt.lowt)
+  {
+    calarm[LTEMP].code = LTEMP;
+    calarm[LTEMP].atime = rdata.rtime;
+    calarm[LTEMP].value = rdata.temperature;
+  }
+
+  if (rdata.humidity >= alarmpt.highh)
+  {
+    calarm[HHUMID].code = HHUMID;
+    calarm[HHUMID].atime = rdata.rtime;
+    calarm[HHUMID].value = rdata.humidity;
+  }
+
+  if (rdata.humidity <= alarmpt.lowh)
+  {
+    calarm[LHUMID].code = LHUMID;
+    calarm[LHUMID].atime = rdata.rtime;
+    calarm[LHUMID].value = rdata.humidity;
+  }
+
+  if (rdata.pressure >= alarmpt.highp)
+  {
+    calarm[HPRESS].code = HPRESS;
+    calarm[HPRESS].atime = rdata.rtime;
+    calarm[HPRESS].value = rdata.pressure;
+  }
+
+  if (rdata.pressure <= alarmpt.lowp)
+  {
+    calarm[LPRESS].code = LPRESS;
+    calarm[LPRESS].atime = rdata.rtime;
+    calarm[LPRESS].value = rdata.pressure;
+  }
+}
+/**  @brief Display active alarms
+ *   @version 9APR2021
+ *   @author Caio Cotts
+ *   @param alrm array holding alarm states
+ *   @return void
+ */
+void GhDisplayAlarms(alarm_s alrm[NALARMS])
+{
+  puts("\nAlarms");
+  for (int i = 1; i < NALARMS; i++)
+  {
+    if (alrm[i].code != NOALARM)
+    {
+      printf("%s Alarm %s", alarmnames[i], ctime(&alrm[i].atime));
+    }
+  }
 }

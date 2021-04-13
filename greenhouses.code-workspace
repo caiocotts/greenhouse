@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../simplegreenhouse"
+		},
+		{
+			"path": "../ncurses_learning"
 		}
 	],
 	"settings": {
@@ -12,7 +15,9 @@
 			"ncurses.h": "c",
 			"stdio.h": "c",
 			"stdlib.h": "c",
-			"typeinfo": "cpp"
-		}
+			"typeinfo": "cpp",
+			"coloredtext.h": "c"
+		},
+		"editor.formatOnSave": true
 	}
 }

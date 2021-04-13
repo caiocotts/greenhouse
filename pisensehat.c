@@ -13,7 +13,7 @@ int numReadings = 0;  // python threads maximum reached after about a dozen read
 
 /** @brief Initialize Sensehat
  *  @author Paul Moggach
- *  @author Kristian Medri
+ *  @author Kristian Medri 
  *  @version 2020-05-01
  *  @param void
  *  @return exit status

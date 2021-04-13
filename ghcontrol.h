@@ -35,21 +35,59 @@
 #define HBAR 5
 #define PBAR 3
 #define SENSEHAT 1
+#define NALARMS 7
+#define LOWERATEMP 10
+#define UPPERATEMP 30
+#define LOWERAHUMID 25
+#define UPPERAHUMID 70
+#define LOWERAPRESS 985
+#define UPPERAPRESS 1016
+#define ALARMNMSZ 18
 
-typedef struct readings {
+typedef struct readings
+{
   time_t rtime;
   double temperature;
   double humidity;
   double pressure;
 } reading_s;
-typedef struct setpoints {
+typedef struct setpoints
+{
   double temperature;
   double humidity;
 } setpoint_s;
-typedef struct controls {
+typedef struct controls
+{
   int heater;
   int humidifier;
 } control_s;
+
+typedef enum
+{
+  NOALARM,
+  HTEMP,
+  LTEMP,
+  HHUMID,
+  LHUMID,
+  HPRESS,
+  LPRESS
+} alarm_e;
+
+typedef struct alarmlimits
+{
+  double hight;
+  double lowt;
+  double highh;
+  double lowh;
+  double highp;
+  double lowp;
+} alarmlimit_s;
+typedef struct alarms
+{
+  alarm_e code;
+  time_t atime;
+  double value;
+} alarm_s;
 
 ///@cond INTERNAL
 int GhGetRandom(int range);
@@ -70,6 +108,10 @@ int GhLogData(char *fname, reading_s ghdata);
 int GhSaveSetPoints(char *fname, setpoint_s spts);
 setpoint_s GhRetrieveSetPoints(char *fname);
 void GhDisplayAll(reading_s rd, setpoint_s sd);
+alarmlimit_s GhSetAlarmLimits(void);
+void GhSetAlarms(alarm_s calarm[NALARMS], alarmlimit_s alarmpt,
+                 reading_s rdata);
+void GhDisplayAlarms(alarm_s alrm[NALARMS]);
 ///@endcond
 
 #endif
