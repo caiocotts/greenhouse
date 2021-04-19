@@ -250,7 +250,7 @@ void GhDisplayTargets(setpoint_s spts)
 /**  @brief Print the current states of heater and humidifier.
  *   @version 9APR2021
  *   @author Caio Cotts
- *   @param ctrl Holds the current states for heater and humidifier
+ *   @param ctrl Holds the current states for heater and humidifier.
  *   @return void
  */
 void GhDisplayControls(control_s ctrl)
@@ -264,7 +264,7 @@ void GhDisplayControls(control_s ctrl)
  *   @author Caio Cotts
  *   @param fname points to a file which will hold output data.
  *   @param ghdata holds current time and sensor readings.
- *   @return 1 or 0 depending on the value returned by fopen
+ *   @return 1 or 0 depending on the value returned by fopen.
  */
 int GhLogData(char *fname, reading_s ghdata)
 {
@@ -292,7 +292,7 @@ int GhLogData(char *fname, reading_s ghdata)
  *   @author Caio Cotts
  *   @param fname points to a file which will hold environmental constants.
  *   @param ghdata holds environmental constants.
- *   @return 1 or 0 depending on the value returned by fopen
+ *   @return 1 or 0 depending on the value returned by fopen. 
  */
 int GhSaveSetPoints(char *fname, setpoint_s spts)
 {
@@ -311,7 +311,7 @@ int GhSaveSetPoints(char *fname, setpoint_s spts)
  *   @version 9APR2021
  *   @author Caio Cotts
  *   @param fname points to a file which will hold environmental constants.
- *   @return variable holding environmental constants
+ *   @return variable holding environmental constants.
  */
 setpoint_s GhRetrieveSetPoints(char *fname)
 {
@@ -327,11 +327,11 @@ setpoint_s GhRetrieveSetPoints(char *fname)
   return spts;
 }
 
-/**  @brief Display scaled sensor readings and targets on LED matrix
+/**  @brief Display scaled sensor readings and targets on LED matrix.
  *   @version 9APR2021
  *   @author Caio Cotts
- *   @param rd current sensor readings
- *   @param sd current environmental constants
+ *   @param rd current sensor readings.
+ *   @param sd current environmental constants.
  *   @return void
  */
 void GhDisplayAll(reading_s rd, setpoint_s sd)
@@ -366,10 +366,10 @@ void GhDisplayAll(reading_s rd, setpoint_s sd)
   ShSetPixel(HBAR, sv, pxc);
 }
 
-/**  @brief Set maximum and lowest values that will trigger the alarm
+/**  @brief Set maximum and lowest values that will trigger the alarm.
  *   @version 9APR2021
  *   @author Caio Cotts
- *   @return alarm limit values
+ *   @return alarm limit values.
  */
 alarmlimit_s GhSetAlarmLimits(void)
 {
@@ -383,78 +383,164 @@ alarmlimit_s GhSetAlarmLimits(void)
   return calarm;
 }
 
-/**  @brief Set alarms on or of depending one current sensor readings
+/**  @brief Set alarms on or of depending one current sensor readings.
  *   @version 9APR2021
  *   @author Caio Cotts
- *   @param calarm array holding alarm states
- *   @param alarmpt alarm limits
- *   @param radata current sensor readings and time
+ *   @param calarm array holding alarm states.
+ *   @param alarmpt alarm limits.
+ *   @param radata current sensor readings and time.
  *   @return void
  */
-void GhSetAlarms(alarm_s calarm[NALARMS], alarmlimit_s alarmpt,
-                 reading_s rdata)
+alarm_s *GhSetAlarms(alarm_s *head, alarmlimit_s salarmpt, reading_s srdata)
 {
-  for (int i = 0; i < NALARMS; i++)
+
+  if (srdata.temperature >= salarmpt.hight)
   {
-    calarm[i].code = NOALARM;
+    GhSetOneAlarm(HTEMP, srdata.rtime, srdata.temperature, head);
+  }
+  else
+  {
+    head = GhClearOneAlarm(HTEMP, head);
   }
 
-  if (rdata.temperature >= alarmpt.hight)
+  if (srdata.humidity >= salarmpt.highh)
   {
-    calarm[HTEMP].code = HTEMP;
-    calarm[HTEMP].atime = rdata.rtime;
-    calarm[HTEMP].value = rdata.temperature;
+    GhSetOneAlarm(HHUMID, srdata.rtime, srdata.humidity, head);
+  }
+  else
+  {
+    head = GhClearOneAlarm(HHUMID, head);
   }
 
-  if (rdata.temperature <= alarmpt.lowt)
+  if (srdata.pressure >= salarmpt.highp)
   {
-    calarm[LTEMP].code = LTEMP;
-    calarm[LTEMP].atime = rdata.rtime;
-    calarm[LTEMP].value = rdata.temperature;
+    GhSetOneAlarm(HPRESS, srdata.rtime, srdata.pressure, head);
+  }
+  else
+  {
+    head = GhClearOneAlarm(HPRESS, head);
   }
 
-  if (rdata.humidity >= alarmpt.highh)
-  {
-    calarm[HHUMID].code = HHUMID;
-    calarm[HHUMID].atime = rdata.rtime;
-    calarm[HHUMID].value = rdata.humidity;
-  }
+  return head;
+}
+/**  @brief Display active alarms.
+ *   @version 9APR2021
+ *   @author Caio Cotts
+ *   @param alrm array holding alarm states.
+ *   @return void
+ */
+void GhDisplayAlarms(alarm_s *head)
+{
+  alarm_s *cur;
+  cur = head;
+  puts("\nAlarms");
 
-  if (rdata.humidity <= alarmpt.lowh)
+  while (cur != NULL)
   {
-    calarm[LHUMID].code = LHUMID;
-    calarm[LHUMID].atime = rdata.rtime;
-    calarm[LHUMID].value = rdata.humidity;
-  }
+    if (cur->code == HTEMP)
+    {
+      printf("%s %s", alarmnames[HTEMP], ctime(&cur->atime));
+    }
+    else if (cur->code == LTEMP)
+    {
+      printf("%s %s", alarmnames[LTEMP], ctime(&cur->atime));
+    }
+    if (cur->code == HHUMID)
+    {
+      printf("%s %s", alarmnames[HHUMID], ctime(&cur->atime));
+    }
+    else if (cur->code == LHUMID)
+    {
+      printf("%s %s", alarmnames[LHUMID], ctime(&cur->atime));
+    }
+    if (cur->code == HPRESS)
+    {
+      printf("%s %s", alarmnames[HPRESS], ctime(&cur->atime));
+    }
+    else if (cur->code == LPRESS)
+    {
+      printf("%s %s", alarmnames[LPRESS], ctime(&cur->atime));
+    }
 
-  if (rdata.pressure >= alarmpt.highp)
-  {
-    calarm[HPRESS].code = HPRESS;
-    calarm[HPRESS].atime = rdata.rtime;
-    calarm[HPRESS].value = rdata.pressure;
-  }
-
-  if (rdata.pressure <= alarmpt.lowp)
-  {
-    calarm[LPRESS].code = LPRESS;
-    calarm[LPRESS].atime = rdata.rtime;
-    calarm[LPRESS].value = rdata.pressure;
+    cur = cur->next;
   }
 }
-/**  @brief Display active alarms
+
+/**  @brief Set the alarm code for one alarm in a linked list.
  *   @version 9APR2021
  *   @author Caio Cotts
- *   @param alrm array holding alarm states
- *   @return void
+ *   @param code current alarm code.
+ *   @param atime current time.
+ *   @param head the first element in the linked list.
+ *   @return int
  */
-void GhDisplayAlarms(alarm_s alrm[NALARMS])
+int GhSetOneAlarm(alarm_e code, time_t atime, double value, alarm_s *head)
 {
-  puts("\nAlarms");
-  for (int i = 1; i < NALARMS; i++)
+  alarm_s *last, *cur;
+  cur = head;
+
+  if (cur->code != 0)
   {
-    if (alrm[i].code != NOALARM)
+    while (cur != NULL)
     {
-      printf("%s Alarm %s", alarmnames[i], ctime(&alrm[i].atime));
+      if (cur->code == code)
+      {
+        return 0;
+      }
+      last = cur;
+      cur = cur->next;
     }
   }
+  else
+  {
+    cur->code = code;
+    cur->atime = atime;
+    cur->value = value;
+    cur->next = NULL;
+    return 1;
+  }
+  cur = (alarm_s *)calloc(1, sizeof(alarm_s));
+  last->next = cur;
+  cur->code = code;
+  cur->atime = atime;
+  cur->value = value;
+  cur->next = NULL;
+  return 1;
+}
+
+/**  @brief Clear one alarm from a linked list.
+ *   @version 9APR2021
+ *   @author Caio Cotts
+ *   @param code current alarm code.
+ *   @param head the first element in the linked list.
+ *   @return pointer to head of the linked list.
+ */
+alarm_s *GhClearOneAlarm(alarm_e code, alarm_s *head)
+{
+  alarm_s *cur, *last;
+  cur = last = head;
+  if (cur->code == code && cur->next == NULL)
+  {
+    cur->code = NOALARM;
+    return head;
+  }
+
+  if (cur->code == code && cur->next != NULL)
+  {
+    head = cur->next;
+    free(cur);
+    return head;
+  }
+  while (cur != NULL)
+  {
+    if (cur->code == code)
+    {
+      last->next = cur->next;
+      free(cur);
+      return head;
+    }
+    last = cur;
+    cur = cur->next;
+  }
+  return head;
 }

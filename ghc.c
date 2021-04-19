@@ -13,7 +13,13 @@ int main()
   setpoint_s sets = {0};
   reading_s creadings = {0};
   alarmlimit_s alimits = {0};
-  alarm_s warn[NALARMS] = {0};
+  alarm_s *arecord;
+  arecord = (alarm_s *)calloc(1, sizeof(alarm_s));
+  if (arecord == NULL)
+  {
+    puts("Cannot allocate memory");
+  }
+
   sets = GhSetTargets();
   alimits = GhSetAlarmLimits();
   GhControllerInit();
@@ -27,9 +33,9 @@ int main()
     GhDisplayReadings(creadings);
     GhDisplayTargets(sets);
     ctrl = GhSetControls(sets, creadings);
-    GhSetAlarms(warn, alimits, creadings);
+    arecord = GhSetAlarms(arecord, alimits, creadings);
     GhDisplayControls(ctrl);
-    GhDisplayAlarms(warn);
+    GhDisplayAlarms(arecord);
     GhDelay(GHUPDATE);
   }
 

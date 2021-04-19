@@ -25,9 +25,9 @@
 #define SHUMID 55.0
 #define ON 1
 #define OFF 0
-#define SIMTEMPERATURE 0
-#define SIMHUMIDITY 0
-#define SIMPRESSURE 0
+#define SIMTEMPERATURE 1
+#define SIMHUMIDITY 1
+#define SIMPRESSURE 1
 #define CTIMESTRSZ 25
 #define NUMBARS 8
 #define NUMPTS 8.0
@@ -87,6 +87,7 @@ typedef struct alarms
   alarm_e code;
   time_t atime;
   double value;
+  struct alarms *next;
 } alarm_s;
 
 ///@cond INTERNAL
@@ -109,9 +110,11 @@ int GhSaveSetPoints(char *fname, setpoint_s spts);
 setpoint_s GhRetrieveSetPoints(char *fname);
 void GhDisplayAll(reading_s rd, setpoint_s sd);
 alarmlimit_s GhSetAlarmLimits(void);
-void GhSetAlarms(alarm_s calarm[NALARMS], alarmlimit_s alarmpt,
-                 reading_s rdata);
-void GhDisplayAlarms(alarm_s alrm[NALARMS]);
+alarm_s *GhSetAlarms(alarm_s *head, alarmlimit_s salarmpt,
+                     reading_s srdata);
+void GhDisplayAlarms(alarm_s *head);
+int GhSetOneAlarm(alarm_e code, time_t atime, double value, alarm_s *head);
+alarm_s *GhClearOneAlarm(alarm_e code, alarm_s *head);
 ///@endcond
 
 #endif
